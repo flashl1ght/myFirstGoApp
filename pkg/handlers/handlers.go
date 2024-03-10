@@ -4,6 +4,7 @@ import (
 	"net/http"
 
 	"github.com/flashl1ght/myFirstGoApp/pkg/config"
+	"github.com/flashl1ght/myFirstGoApp/pkg/models"
 	"github.com/flashl1ght/myFirstGoApp/pkg/render"
 )
 
@@ -29,10 +30,17 @@ func NewHandlers(r *Repository) {
 
 // Home is the home page handler
 func (m *Repository) Home(w http.ResponseWriter, r *http.Request) {
-	render.RenderTemplate(w, "home.page.gohtml")
+	render.RenderTemplate(w, "home.page.gohtml", &models.TemplateData{})
 }
 
 // About is the about page handler
 func (m *Repository) About(w http.ResponseWriter, r *http.Request) {
-	render.RenderTemplate(w, "about.page.gohtml")
+	// perform some placeholder logic
+	stringMap := make(map[string]string)
+	stringMap["message"] = "This site is under construction"
+
+	// send the data to the template
+	render.RenderTemplate(w, "about.page.gohtml", &models.TemplateData{
+		StringMap: stringMap,
+	})
 }

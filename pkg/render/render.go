@@ -8,6 +8,7 @@ import (
 	"path/filepath"
 
 	"github.com/flashl1ght/myFirstGoApp/pkg/config"
+	"github.com/flashl1ght/myFirstGoApp/pkg/models"
 )
 
 var app *config.AppConfig
@@ -17,8 +18,13 @@ func NewTemplates(a *config.AppConfig) {
 	app = a
 }
 
+// AddDefaultData adds data to TemplateData
+func AddDefaultData(td *models.TemplateData) *models.TemplateData {
+	return td
+}
+
 // RenderTemplate renders templates using html/template
-func RenderTemplate(w http.ResponseWriter, tmpl string) {
+func RenderTemplate(w http.ResponseWriter, tmpl string, td *models.TemplateData) {
 	// get the template cache frokm the app config
 	templateCache := app.TemplateCache
 
@@ -29,7 +35,9 @@ func RenderTemplate(w http.ResponseWriter, tmpl string) {
 
 	buffer := new(bytes.Buffer)
 
-	_ = t.Execute(buffer, nil)
+	td = AddDefaultData(td)
+
+	_ = t.Execute(buffer, td)
 
 	//render the template
 	_, err := buffer.WriteTo(w)
