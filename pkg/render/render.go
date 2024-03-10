@@ -6,38 +6,40 @@ import (
 	"log"
 	"net/http"
 	"path/filepath"
+
+	"github.com/flashl1ght/myFirstGoApp/pkg/config"
 )
+
+var app *config.AppConfig
+
+// NewTemplates sets the config for the template package
+func NewTemplates(a *config.AppConfig) {
+	app = a
+}
 
 // RenderTemplate renders templates using html/template
 func RenderTemplate(w http.ResponseWriter, tmpl string) {
-	// create a template cache
-	tc, err := createTemplateCache()
-	if err != nil {
-		log.Fatal(err)
-	}
+	// get the template cache frokm the app config
+	templateCache := app.TemplateCache
 
-	// get requested template from cache
-	t, ok := tc[tmpl]
+	t, ok := templateCache[tmpl]
 	if !ok {
-		log.Fatal(err)
+		log.Fatal("could not get template from template cache")
 	}
 
 	buffer := new(bytes.Buffer)
 
-	err = t.Execute(buffer, nil)
-	if err != nil {
-		log.Println(err)
-	}
+	_ = t.Execute(buffer, nil)
 
 	//render the template
-	_, err = buffer.WriteTo(w)
+	_, err := buffer.WriteTo(w)
 	if err != nil {
-		log.Println(err)
+		log.Println("error writting template to browser", err)
 	}
 }
 
 // createTemplateCache caches all templates found in ./templates
-func createTemplateCache() (map[string]*template.Template, error) {
+func CreateTemplateCache() (map[string]*template.Template, error) {
 	templateCache := map[string]*template.Template{}
 
 	// get all *.page.gohtml files from ./templates
